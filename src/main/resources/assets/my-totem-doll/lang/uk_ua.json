@@ -10,6 +10,8 @@
 	"my-totem-doll.modmenu.group.main.description": "Головні налаштування мода My Totem Doll.",
 	"my-totem-doll.modmenu.option.mod_enabled.name": "Стан моду",
 	"my-totem-doll.modmenu.option.mod_enabled.description": "Якщо увімкнено, усі тотеми зміняться на ляльки гравців.",
+	"my-totem-doll.modmenu.option.support_other_mods_totems.name": "Підтримка тотемів інших модів",
+	"my-totem-doll.modmenu.option.support_other_mods_totems.description": "Якщо увімкнено, моделі ляльок також застосовуватимуться до тотемів інших модів. Якщо вимкнено, не застосовуватимуться.",
 	"my-totem-doll.modmenu.option.debug_log_enabled.name": "&6Стан журналу налагодження",
 	"my-totem-doll.modmenu.option.debug_log_enabled.description": "Якщо увімкнено, додаткова інформація буде зареєстрована на консолі для налагодження.",
 
@@ -78,7 +80,7 @@
 	"my-totem-doll.tags.info.text": "Це &eменю теґів ляльки&f.\nУ цьому меню ви можете знайти список &eкнопок&f.\nНатискаючи кнопки, ви можете &змінити зовнішній вигляд&f свого тотема. Наприклад: &eВимкнути/увімкнути певні частини&f, &eповторно вибрати спеціальну модель&f тощо.",
 
 	"my-totem-doll.tags.tips.title": "&e&lПідказки!",
-	"my-totem-doll.tags.tips.text": "  &e&l1. &rУтримуйте &7[Shift]&r наводячи курсор на тотем, щоб побачити його статус. Завжди увімкнено в ковадлі усталено.\n\n&e&l2. &rВикористати команду &7/my-totem-doll reload [...]&r для перезавантаження ляльок.",
+	"my-totem-doll.tags.tips.text": "  &e&l1. &rУтримуйте &7[Shift]&r наводячи курсор на тотем, щоб побачити його статус. Завжди увімкнено в ковадлі усталено.\n\n&e&l2. &rВикористати команду &7/my-totem-doll reload […]&r для перезавантаження ляльок.",
 
 	"my-totem-doll.tags.title": "&7Теґи ляльки",
 	"my-totem-doll.tags.0": "Установити струнку модель",
@@ -103,7 +105,7 @@
 	"my-totem-doll.welcome_screen.option.3d": "&l3D лялька",
 	"my-totem-doll.welcome_screen.option.2d": "&l2D тотем",
 
-	"my-totem-doll.placeholder.search": "Пошук..",
+	"my-totem-doll.placeholder.search": "Пошук…",
 	"my-totem-doll.button.select_current": "&aВибрати поточну",
 	"my-totem-doll.button.close": "&cЗакрити",
 	"my-totem-doll.text.select_text": "&o*Натисніть для вибору*",
