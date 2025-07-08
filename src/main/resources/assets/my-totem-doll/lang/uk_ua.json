@@ -41,7 +41,7 @@
 	"my-totem-doll.modmenu.group.standard_doll_model.description": "",
 	"my-totem-doll.modmenu.group.standard_doll_skin.description": "",
 
-	"my-totem-doll.modmenu.option.use_vanilla_totem_model.name": "Використовувати ванілльну модель тотему",
+	"my-totem-doll.modmenu.option.use_vanilla_totem_model.name": "Використовувати усталену модель тотему",
 
 	"my-totem-doll.modmenu.option.standard_doll_skin_type.name": "Скін",
 	"my-totem-doll.modmenu.option.standard_doll_skin_type.steve": "Стів",
@@ -95,10 +95,10 @@
 	"my-totem-doll.command.id": "[&lMy Totem Doll&r]",
 
 	"my-totem-doll.command.refresh.all.start": "&6Почалось перезавантаження усіх текстур скінів",
-	"my-totem-doll.command.refresh.all.end": "&aПерезавантаженно усі текстури скінів за &f%s&a секунд",
+	"my-totem-doll.command.refresh.all.end": "&aПерезавантажено усі текстури скінів за &f%s&a секунд",
 
 	"my-totem-doll.command.refresh.player.start": "&6Почалось перезавантаження текстри скінів &f%s&6",
-	"my-totem-doll.command.refresh.player.end": "&aПерезавантаженно текстури скінів для &f%s&a, за &f%s&a секунд",
+	"my-totem-doll.command.refresh.player.end": "&aПерезавантажено текстури скінів для &f%s&a, за &f%s&a секунд",
 
 	"my-totem-doll.welcome_screen.title": "Екран привітання",
 	"my-totem-doll.welcome_screen.text": "&lЕкран привітання&r\n\nЗдається, ви вперше запускаєте гру з модом &lMy Totem Doll&r.\nЯку стандартну модель ви хотіли б використати для своїх тотемів?",
