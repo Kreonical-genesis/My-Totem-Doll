@@ -8,7 +8,7 @@ import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.resource.ResourceReload;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.*;
 
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -24,7 +24,7 @@ public class MinecraftClientMixin {
 
 	//? if >=1.21 {
 	@Inject(at = @At("HEAD"), method = "createInitScreens")
-	private void generated(List<Function<Runnable, Screen>> list, CallbackInfo ci) {
+	private void addMTDHelloScreen(List<Function<Runnable, Screen>> list, /*? if >=1.21.6 {*/ CallbackInfoReturnable<Boolean> /*?} else {*/ /*CallbackInfo *//*?}*/ ci) {
 		MyTotemDollConfig config = MyTotemDollClient.getConfig();
 		if (config.isFirstRun() || FabricLoader.getInstance().isDevelopmentEnvironment()) {
 			list.add(WelcomeScreen::new);
@@ -34,7 +34,7 @@ public class MinecraftClientMixin {
 	}
 	//?} else {
 	/*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;onInitFinished(Lnet/minecraft/client/realms/RealmsClient;Lnet/minecraft/resource/ResourceReload;Lnet/minecraft/client/RunArgs$QuickPlay;)V"), method = "<init>")
-	private void generated(MinecraftClient instance, RealmsClient realmsClient, ResourceReload resourceReload, QuickPlay quickPlay, Operation<Void> original) {
+	private void addMTDHelloScreen(MinecraftClient instance, RealmsClient realmsClient, ResourceReload resourceReload, QuickPlay quickPlay, Operation<Void> original) {
 		Runnable runnable = () -> original.call(instance, realmsClient, resourceReload, quickPlay);
 
 		MyTotemDollConfig config = MyTotemDollClient.getConfig();

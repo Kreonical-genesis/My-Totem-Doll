@@ -1,37 +1,37 @@
 package net.lopymine.mtd.doll.data;
 
 import lombok.*;
+import net.lopymine.mtd.model.bb.manager.BlockBenchModelManager;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.util.Identifier;
 
 import net.lopymine.mtd.doll.model.TotemDollModel;
 import net.lopymine.mtd.model.base.MModel;
-import net.lopymine.mtd.model.bb.manager.BlockBenchModelManager;
 
-import java.util.*;
 import org.jetbrains.annotations.*;
 
 @Getter
 @Setter
 public class TotemDollData {
 
-	private final Map<Identifier, MModel> tempModels = new HashMap<>();
+	private boolean shouldRecreateStandardModel;
+
 	@Nullable
-	private String nickname;
+	private TotemDollModel standardModel;
 	@Nullable
-	private TotemDollModel model;
+	private TotemDollModel frameModel;
+
 	@NotNull
 	private TotemDollTextures textures;
 	@Nullable
-	private TotemDollTextures currentTempTextures;
+	private TotemDollTextures frameTextures;
 
-	private boolean shouldRecreateModel;
-	@Nullable
-	private MModel currentTempMModel;
-	@Nullable
-	private TotemDollModel currentTempModel;
+	@NotNull
+	private TotemDollRenderProperties renderProperties = new TotemDollRenderProperties();
 
 	public TotemDollData(@Nullable String nickname, @NotNull TotemDollTextures textures) {
-		this.nickname = nickname;
+		this.renderProperties.refresh(textures);
+		this.renderProperties.setNickname(nickname);
 		this.textures = textures;
 	}
 
@@ -39,96 +39,124 @@ public class TotemDollData {
 		return new TotemDollData(nickname, TotemDollTextures.create());
 	}
 
-	public void setCustomModel(MModel model) {
-		this.model = new TotemDollModel(model, this.textures.getArmsType().isSlim());
+	public String getNickname() {
+		return this.renderProperties.getNickname();
 	}
 
-	public void setTempModel(Identifier id) {
-		MModel model = this.tempModels.get(id);
-		if (model == null) {
-			BlockBenchModelManager.getModelAsyncAsResponse(id, (response) -> {
-				if (!response.isEmpty()) {
-					MModel tempMModel = response.value();
-					this.tempModels.put(id, tempMModel);
-					this.setCurrentTempMModel(tempMModel);
-				}
-			});
-			return;
-		}
-		this.setCurrentTempMModel(model);
+	public void setStandardMModel(Identifier modelId) {
+		BlockBenchModelManager.consumeModelById(modelId, this::setStandardMModel);
 	}
 
-	public void setCurrentTempMModel(@Nullable MModel currentTempMModel) {
-		this.currentTempMModel = currentTempMModel;
-		TotemDollModel tempModel = this.getOrCreateOrUpdateTempModelWithTempMModel();
-		if (tempModel != null && this.model != null) {
-			tempModel.setSlim(this.model.isSlim());
+	public void setStandardMModel(MModel model) {
+		this.standardModel = new TotemDollModel(model, this.renderProperties.isSlim());
+		this.renderProperties.setStandardMModel(model);
+	}
+
+	public void setFrameMModel(Identifier id) {
+		this.renderProperties.consumeFrameMModel(id, this::setFrameMModel);
+	}
+
+	public void setFrameMModel(@Nullable MModel frameMModel) {
+		this.renderProperties.setFrameMModel(frameMModel);
+
+		TotemDollModel tempModel = this.getFrameModelBasedOnFrameMModel();
+		if (tempModel != null && this.standardModel != null) {
+			tempModel.setSlim(this.renderProperties.isSlim());
 		}
 	}
 
 	@Nullable
-	private TotemDollModel getOrCreateOrUpdateTempModelWithTempMModel() {
-		if (this.currentTempMModel != null) {
-			if (this.currentTempModel == null || !this.currentTempModel.getMain().equals(this.currentTempMModel)) {
-				return this.currentTempModel = new TotemDollModel(this.currentTempMModel, this.textures.getArmsType().isSlim());
+	private TotemDollModel getFrameModelBasedOnFrameMModel() {
+		if (this.renderProperties.getFrameMModel() != null) {
+			if (this.frameModel == null || !this.frameModel.getMain().equals(this.renderProperties.getFrameMModel())) {
+				return this.frameModel = new TotemDollModel(this.renderProperties.getFrameMModel(), this.renderProperties.isSlim());
 			}
-			return this.currentTempModel;
+			return this.frameModel;
 		}
 		return null;
 	}
 
-	public TotemDollModel getModel() {
-		TotemDollModel tempModel = this.getOrCreateOrUpdateTempModelWithTempMModel();
+	public TotemDollModel getModelToRender() {
+		TotemDollModel tempModel = this.getFrameModelBasedOnFrameMModel();
 		if (tempModel != null) {
 			return tempModel;
 		}
 
-		if (this.model != null && !this.shouldRecreateModel) {
-			return this.model;
+		if (this.standardModel != null && !this.shouldRecreateStandardModel) {
+			return this.standardModel;
 		}
 
-		MModel dollModel = TotemDollModel.createDollModel();
-		this.model = new TotemDollModel(dollModel, this.textures.getArmsType().isSlim());
+		this.setStandardMModel(TotemDollModel.createDollModel());
 
-		if (this.shouldRecreateModel) {
-			this.shouldRecreateModel = false;
+		if (this.shouldRecreateStandardModel) {
+			this.shouldRecreateStandardModel = false;
 		}
 
-		return this.model;
+		return this.standardModel;
 	}
 
-	public TotemDollTextures getRenderTextures() {
-		return this.currentTempTextures == null ? this.textures : this.currentTempTextures;
+	public TotemDollTextures getTexturesToRender() {
+		return this.frameTextures == null ? this.textures : this.frameTextures;
 	}
 
 	public TotemDollData copy() {
-		return new TotemDollData(this.nickname, this.textures.copy());
+		return new TotemDollData(this.renderProperties.getNickname(), this.textures.copy());
 	}
 
-	public void clearCurrentTempModel() {
-		if (this.currentTempModel != null) {
-			this.currentTempModel.resetPartsVisibility();
+	public void setTextures(@NotNull TotemDollTextures textures) {
+		this.textures = textures;
+		if (this.standardModel == null) {
+			return;
 		}
-		this.setCurrentTempMModel(null);
+		this.standardModel.setSlim(textures.getArmsType().isSlim());
 	}
 
-	public void clearAllTempModels() {
-		this.clearCurrentTempModel();
-		this.currentTempModel = null;
-		this.tempModels.clear();
+	public void setFrameTextures(@Nullable TotemDollTextures frameTextures) {
+		this.frameTextures = frameTextures;
+		if (frameTextures == null) {
+			return;
+		}
+		this.getModelToRender().setSlim(frameTextures.getArmsType().isSlim());
 	}
 
-	public void clearCurrentTempTextures() {
-		this.currentTempTextures = null;
+	public void clearAllFrameModelsCompletely() {
+		this.clearFrameModel();
+		this.renderProperties.clearCachedFrameMModels();
 	}
 
-	public TotemDollData refreshBeforeRendering() {
-		this.clearCurrentTempTextures();
-		this.clearCurrentTempModel();
-		TotemDollTextures textures = this.getTextures();
-		textures.refreshBeforeRendering();
-		TotemDollModel model = this.getModel();
-		model.apply(textures);
+	public void clearFrameModel() {
+		if (this.frameModel != null) {
+			this.frameModel.resetPartsVisibility();
+			this.frameModel = null;
+		}
+	}
+
+	public void clearFrameTextures() {
+		this.frameTextures = null;
+	}
+
+	public TotemDollData refreshAndApplyRenderProperties() {
+		return this.refreshRenderProperties().applyRenderProperties();
+	}
+
+	public TotemDollData refreshRenderProperties() {
+		// Make sure it's cleared
+		this.clearFrameModel();
+		this.clearFrameTextures();
+		this.renderProperties.refresh(this.textures);
+		this.getModelToRender().resetPartsVisibility();
 		return this;
 	}
+
+	public TotemDollData applyRenderProperties() {
+		this.renderProperties.applyToModel(this.getModelToRender());
+		return this;
+	}
+
+	//? if >=1.21.6 {
+	@NotNull
+	public net.lopymine.mtd.doll.renderer.special.TotemDollGuiElementRenderer getGuiRenderer(Immediate immediate) {
+		return net.lopymine.mtd.doll.renderer.special.TotemDollGuiElementRenderer.getRenderer(this.renderProperties, immediate);
+	}
+	//?}
 }

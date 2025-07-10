@@ -15,10 +15,10 @@
 	"my-totem-doll.modmenu.option.debug_log_enabled.name": "&6Debug Log Enabled",
 	"my-totem-doll.modmenu.option.debug_log_enabled.description": "If enabled, additional info will be logged to console for debugging; if disabled, won't.",
 
-	"my-totem-doll.modmenu.group.threads.name": "&lThreads",
-	"my-totem-doll.modmenu.group.threads.description": "Threads settings which may affect performance!",
-	"my-totem-doll.modmenu.option.executor_threads_count.name": "Executor Threads Count",
-	"my-totem-doll.modmenu.option.executor_threads_count.description": "Sets how many threads will be allocated for mod tasks, such as downloading skins. Mainly used for downloading skins.",
+	"my-totem-doll.modmenu.group.parallel_tasks.name": "&lParallel Tasks",
+	"my-totem-doll.modmenu.group.parallel_tasks.description": "Parallel Tasks Settings which may affect performance!",
+	"my-totem-doll.modmenu.option.parallel_tasks_count.name": "Parallel Tasks Count",
+	"my-totem-doll.modmenu.option.parallel_tasks_count.description": "Sets how many parallel tasks can be run for mod tasks, such as parallel downloading skins.",
 
 	"my-totem-doll.modmenu.category.rendering.name": "&lRendering",
 	"my-totem-doll.modmenu.group.right_hand.name": "&lRight Hand",

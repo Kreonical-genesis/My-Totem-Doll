@@ -1,5 +1,6 @@
 package net.lopymine.mtd.mixin;
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.*;
@@ -13,12 +14,16 @@ import net.lopymine.mtd.utils.tooltip.IRequestableTooltipScreen;
 @Mixin(Screen.class)
 public abstract class ScreenMixin extends AbstractParentElement implements Drawable, IRequestableTooltipScreen {
 
+	@Shadow public TextRenderer textRenderer;
 	@Unique
 	private TooltipRequest tooltipRequest;
 
-	@Inject(at = @At("TAIL"), method = "render")
+	@Inject(at = @At("TAIL"), method = "renderWithTooltip")
 	private void renderWithTooltip(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (this.tooltipRequest != null) {
+			//? if >=1.21.6 {
+			context.createNewRootLayer();
+			//?}
 			this.tooltipRequest.render(context, mouseX, mouseY, delta);
 			this.tooltipRequest = null;
 		}

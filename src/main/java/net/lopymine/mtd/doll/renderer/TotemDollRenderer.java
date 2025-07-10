@@ -1,6 +1,8 @@
 package net.lopymine.mtd.doll.renderer;
 
 import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.extension.*;
+import net.lopymine.mtd.utils.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -18,17 +20,17 @@ import net.lopymine.mtd.doll.data.*;
 import net.lopymine.mtd.doll.manager.StandardTotemDollManager;
 import net.lopymine.mtd.doll.model.TotemDollModel;
 import net.lopymine.mtd.doll.model.TotemDollModel.Drawer;
-import net.lopymine.mtd.extension.ItemStackExtension;
-import net.lopymine.mtd.utils.ProfilerUtils;
 import net.lopymine.mtd.utils.plugin.TotemDollPlugin;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.*;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
+import org.joml.Quaternionf;
 
 
-@ExtensionMethod(ItemStackExtension.class)
+@ExtensionMethod({ItemStackExtension.class, DrawContextExtension.class})
 public class TotemDollRenderer {
 
 	public static boolean rendered(MatrixStack matrices, ItemStack stack, DollRenderContext context, VertexConsumerProvider vertexConsumers, int light, int uv) {
@@ -54,7 +56,8 @@ public class TotemDollRenderer {
 		}
 
 		matrices.push();
-		renderContext.apply(totemDollData.getModel().getMain(), matrices);
+		renderContext.apply(totemDollData.getModelToRender().getMain(), matrices);
+		totemDollData.getRenderProperties().setRenderContext(renderContext);
 		matrices.translate(-0.5F, -1.0F, -0.5F);
 
 		switch (renderContext) {
@@ -65,61 +68,85 @@ public class TotemDollRenderer {
 			default -> TotemDollRenderer.render(matrices, vertexConsumers, light, overlay, totemDollData);
 		}
 
-		matrices.pop();
+		afterDollRenderer();
 
-		afterDollRendered(totemDollData);
+		matrices.pop();
 		return true;
 	}
 
 	public static void renderPreview(DrawContext context, int x, int y, int width, int height, float size, @Nullable TotemDollData data) {
-		MatrixStack matrices = context.getMatrices();
-		Immediate consumers = context.vertexConsumers;
+		renderPreview(context, x, y, width, height, size, data, DollRenderContext.D_PREVIEW);
+	}
 
+	public static void renderPreview(DrawContext context, int x, int y, int width, int height, float size, @Nullable TotemDollData data, DollRenderContext renderContext) {
+		if (data == null) {
+			//? if >=1.21.6 {
+			long currentTime = Util.getMeasuringTimeMs();
+			float rotationSpeed = 0.05f;
+			float rotation = (currentTime * rotationSpeed) % 360;
+			context.state.addSpecialElement(new net.lopymine.mtd.doll.renderer.special.ItemGuiRenderState(Items.TOTEM_OF_UNDYING.getDefaultStack(), x, y, width, height, size, RotationAxis.POSITIVE_Y.rotationDegrees(rotation), context.scissorStack.peekLast()));
+			//?} else {
+			/*renderVanillaTotemPreview(context, x, y, width, height, size);
+			*///?}
+		} else {
+			data.getRenderProperties().setRenderContext(renderContext);
+			//? if >=1.21.6 {
+			context.state.addSpecialElement(net.lopymine.mtd.doll.renderer.special.TotemDollRenderState.getPreview(data, x, y, width, height, size, context.scissorStack.peekLast()));
+			//?} else {
+			/*context.getMatrices().push();
+			int centerX = x + (width / 2);
+			int centerY = y + (height / 2);
+			context.getMatrices().translate(centerX, centerY, 300F);
+			context.getMatrices().scale(-1.0F, 1.0F, 1.0F);
+			renderDataPreview(context.getMatrices(), context.vertexConsumers, context::draw, size, data);
+			context.getMatrices().pop();
+			*///?}
+		}
+	}
+
+	public static void renderDataPreview(MatrixStack matrices, Immediate consumers, Runnable draw, float size, @NotNull TotemDollData data) {
 		float i = (size / 2F);
-		float k = (i / 2F);
-		int centerX = x + (width / 2);
-		int centerY = y + (height / 2);
 
 		long currentTime = Util.getMeasuringTimeMs();
 		float rotationSpeed = 0.05f;
 
 		float rotation = (currentTime * rotationSpeed) % 360;
 
-		if (data != null) {
-			context.draw();
-			DiffuseLighting.disableGuiDepthLighting();
-
-			matrices.push();
-			matrices.translate(centerX, centerY, 300F);
-
-			matrices.translate(0F, k, 0F);
-
-			matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(180F));
-			matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotation));
-			matrices.scale(-i, i, i);
-
-			matrices.translate(-0.5F, -0.5F, -0.5F);
-			TotemDollRenderer.render(matrices, consumers, 15728880, OverlayTexture.DEFAULT_UV, data);
-
-			context.draw();
-
-			DiffuseLighting.enableGuiDepthLighting();
-
-			matrices.pop();
-		} else {
-			float v = i / 16;
-			float d = i / 2;
-			matrices.push();
-			matrices.translate(centerX - d, centerY - d, 400F);
-			matrices.translate(d, d, 0F);
-			matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(rotation));
-			matrices.translate(-d, -d, 0F);
-			matrices.scale(v, v, v);
-			matrices.translate(0F, 0F, -150F); // I hate this
-			context.drawItemWithoutEntity(Items.TOTEM_OF_UNDYING.getDefaultStack(), 0, 0);
-			matrices.pop();
-		}
+		LightningUtils.disable3dLighting();
+		matrices.push();
+		matrices.scale(-i, -i, i);
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+		matrices.translate(-0.5F, -1.0F, -0.5F);
+		TotemDollRenderer.render(matrices, consumers, 15728880, OverlayTexture.DEFAULT_UV, data);
+		matrices.pop();
+		draw.run();
+		LightningUtils.enable3dLighting();
 	}
+
+	//? if <=1.21.5 {
+	/*public static void renderVanillaTotemPreview(DrawContext context, int x, int y, int width, int height, float size) {
+		float i = (size / 2F);
+		int centerX = x + (width / 2);
+		int centerY = y + (height / 2);
+		long currentTime = Util.getMeasuringTimeMs();
+		float rotationSpeed = 0.05f;
+
+		float rotation = (currentTime * rotationSpeed) % 360;
+
+		float v = i / 16;
+		float d = i / 2;
+
+		context.push();
+		context.translate(centerX - d, centerY - d, 400F);
+		context.translate(d, d, 0F);
+		context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+		context.translate(-d, -d, 0F);
+		context.scale(v, v, v);
+		context.translate(0F, 0F, -150F); // I hate this
+		context.drawItemWithoutEntity(Items.TOTEM_OF_UNDYING.getDefaultStack(), 0, 0);
+		context.pop();
+	}
+	*///?}
 
 	public static void renderInHand(boolean leftHanded, boolean firstPerson, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, TotemDollData totemDollData) {
 		matrices.push();
@@ -147,10 +174,10 @@ public class TotemDollRenderer {
 	}
 
 	public static void render(MatrixStack matrices, VertexConsumerProvider provider, int light, int overlay, TotemDollData totemDollData) {
-		TotemDollTextures textures = totemDollData.getRenderTextures();
+		TotemDollTextures textures = totemDollData.getTexturesToRender();
 		Identifier capeTexture = textures.getCapeTexture();
 		Identifier skinTexture = textures.getSkinTexture();
-		TotemDollModel model = totemDollData.getModel();
+		TotemDollModel model = totemDollData.getModelToRender();
 
 		String nickname = totemDollData.getNickname();
 
@@ -182,47 +209,47 @@ public class TotemDollRenderer {
 
 		drawer.draw(matrices, provider, skinTexture, light, overlay, /*? if >=1.21 {*/ -1 /*?} else {*/ /*1.0F, 1.0F, 1.0F, 1.0F *//*?}*/);
 
-//		if (LoadedMods.EARS_LOADED) {
-//			TotemDollEarsRenderer renderer = TotemDollEarsRenderer.getInstance();
-//			renderer.render(matrices, provider, totemDollData, light, overlay);
-//		}
-
 		matrices.pop();
 	}
 
 	private static void prepareStandardDollForRendering(ItemStack stack, TotemDollData totemDollData) {
 		AbstractClientPlayerEntity playerEntity = stack.getPlayerEntity();
-		if ((playerEntity != null) && MyTotemDollClient.getConfig().getStandardTotemDollSkinType() == TotemDollSkinType.HOLDING_PLAYER) {
-			totemDollData.setCurrentTempTextures(TotemDollTextures.of(playerEntity));
-			totemDollData.getModel().setSlim(totemDollData.getRenderTextures().getArmsType().isSlim()); // TODO add property when you can override slim and when can't
+		if (playerEntity != null && MyTotemDollClient.getConfig().getStandardTotemDollSkinType() == TotemDollSkinType.HOLDING_PLAYER) {
+			totemDollData.setFrameTextures(TotemDollTextures.of(playerEntity));
 		}
 	}
 
 	private static boolean beforeDollRendered(@Nullable DollRenderContext context, ItemStack stack, TotemDollData totemDollData) {
-		boolean standardDoll = StandardTotemDollManager.getStandardDoll().equals(totemDollData);
-		if (standardDoll && (TotemDollPlugin.work(MyTotemDollClient.getConfig().getStandardTotemDollSkinValue(), stack) || MyTotemDollClient.getConfig().isUseVanillaTotemModel())) {
-			return false;
-		}
-
 		Profiler profiler = ProfilerUtils.getProfiler();
 		profiler.swap(MyTotemDoll.MOD_ID);
 		if (context == DollRenderContext.D_GUI) {
 			stack.setPlayerEntity(MinecraftClient.getInstance().player);
 		}
 
-		if (standardDoll) {
+		if (StandardTotemDollManager.getStandardDoll().equals(totemDollData)) {
 			TotemDollRenderer.prepareStandardDollForRendering(stack, totemDollData);
 		}
 
 		return true;
 	}
 
-	private static void afterDollRendered(TotemDollData totemDollData) {
-		totemDollData.clearCurrentTempModel();
-		totemDollData.clearCurrentTempTextures();
+	private static void afterDollRenderer() {
+		Profiler profiler = ProfilerUtils.getProfiler();
+		profiler.pop();
 	}
 
 	public static boolean canRender(@Nullable ItemStack stack) {
-		return MyTotemDollClient.canProcess(stack) && !TotemDollPlugin.work(stack) && !stack.hasModdedModel();
+		if (!MyTotemDollClient.canProcess(stack)) {
+			return false;
+		}
+		if (stack.hasModdedModel()) {
+			return false;
+		}
+		Text realCustomName = stack.getRealCustomName();
+		boolean standardDollWithoutName = realCustomName == null;
+		if (standardDollWithoutName && MyTotemDollClient.getConfig().isUseVanillaTotemModel()) {
+			return false;
+		}
+		return !TotemDollPlugin.work(realCustomName);
 	}
 }

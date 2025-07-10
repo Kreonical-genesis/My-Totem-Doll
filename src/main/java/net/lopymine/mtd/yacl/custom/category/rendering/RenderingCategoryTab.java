@@ -6,6 +6,8 @@ import dev.isxander.yacl3.gui.OptionListWidget;
 import dev.isxander.yacl3.gui.*;
 import dev.isxander.yacl3.gui.tab.*;
 import dev.isxander.yacl3.gui.utils.GuiUtils;
+import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.extension.DrawContextExtension;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
@@ -22,6 +24,7 @@ import net.lopymine.mtd.yacl.custom.screen.MyTotemDollYACLScreen;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
+@ExtensionMethod(DrawContextExtension.class)
 public class RenderingCategoryTab implements TabExt {
 
 	public final ButtonWidget saveFinishedButton;
@@ -109,24 +112,24 @@ public class RenderingCategoryTab implements TabExt {
 		DrawUtils.drawTexture(context, TransparencySprites.getMenuListBackgroundTexture(), this.rightPaneDim.getLeft(), this.rightPaneDim.getTop(), this.rightPaneDim.getRight() + 2, this.rightPaneDim.getBottom() + 2, this.rightPaneDim.width() + 2, this.rightPaneDim.height() + 2, 32, 32);
 
 		// top separator for right pane
-		context.getMatrices().push();
-		context.getMatrices().translate(0, 0, 10);
+		context.push();
+		context.translate(0, 0, 10);
 		DrawUtils.drawTexture(context, TransparencySprites.getMenuSeparatorTexture(), this.rightPaneDim.getLeft() - 1, this.rightPaneDim.getTop() - 2, 0.0F, 0.0F, this.rightPaneDim.width() + 1, 2, 32, 2);
-		context.getMatrices().pop();
+		context.pop();
 
 		// down separator for bottom pane
-		context.getMatrices().push();
-		context.getMatrices().translate(this.rightPaneDim.getRight() + 1, this.rightPaneDim.getBottom() + 2, 0);
-		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180), 0, 0, 1);
+		context.push();
+		context.translate(this.rightPaneDim.getRight() + 1, this.rightPaneDim.getBottom() + 2, 0);
+		context.rotateZ(180);
 		DrawUtils.drawTexture(context, TransparencySprites.getMenuSeparatorTexture(), 0, 0, 0.0F, 0.0F, this.rightPaneDim.width() + 2, 2, 32, 2);
-		context.getMatrices().pop();
+		context.pop();
 
 		// left separator for right pane
-		context.getMatrices().push();
-		context.getMatrices().translate(this.rightPaneDim.getLeft(), this.rightPaneDim.getTop() - 1, 0);
-		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90), 0, 0, 1);
+		context.push();
+		context.translate(this.rightPaneDim.getLeft(), this.rightPaneDim.getTop() - 1, 0);
+		context.rotateZ(90);
 		DrawUtils.drawTexture(context, TransparencySprites.getMenuSeparatorTexture(), 0, 0, 0f, 0f, this.rightPaneDim.height() + 2, 2, 32, 2);
-		context.getMatrices().pop();
+		context.pop();
 
 		RenderUtils.disableBlend();
 		RenderUtils.disableDepthTest();
@@ -146,18 +149,9 @@ public class RenderingCategoryTab implements TabExt {
 
 	public void updateButtons() {
 		this.undoButton.active = false;
-		this.saveFinishedButton.setMessage(GuiUtils.translatableFallback("yacl.gui.done", ScreenTexts.DONE));
+		this.saveFinishedButton.setMessage(ScreenTexts.DONE);
+		this.saveFinishedButton.setTooltip(Tooltip.of(Text.translatable("yacl.gui.finished.tooltip")));
 		this.cancelResetButton.setMessage(Text.translatable("controls.reset"));
-
-		MutableText saveFinishedButtonTooltip = Text.translatable("yacl.gui.finished.tooltip");
-		MutableText cancelResetButtonTooltip = Text.translatable("yacl.gui.reset.tooltip");
-
-		//? >=1.20.3 {
-		this.saveFinishedButton.setTooltip(new YACLTooltip(saveFinishedButtonTooltip, this.saveFinishedButton));
-		this.cancelResetButton.setTooltip(new YACLTooltip(cancelResetButtonTooltip, this.cancelResetButton));
-		//?} else {
-		/*this.saveFinishedButton.setTooltip(Tooltip.of(saveFinishedButtonTooltip));
-		this.cancelResetButton.setTooltip(Tooltip.of(cancelResetButtonTooltip));
-		*///?}
+		this.cancelResetButton.setTooltip(Tooltip.of(Text.translatable("yacl.gui.reset.tooltip")));
 	}
 }

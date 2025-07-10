@@ -36,23 +36,25 @@ public class ItemStackExtension {
 	}
 
 	public static TotemDollData getTotemDollData(ItemStack stack) {
-		Text customName = getRealCustomName(stack);
+		Text name = getRealCustomName(stack);
 
-		if (customName != null) {
-			String o = TagsManager.getNicknameOrSkinProviderFromName(customName.getString());
+		if (name != null) {
+			String o = TagsManager.getNicknameOrSkinProviderFromName(name.getString());
 			TotemDollData data = TotemDollManager.getDoll(o);
 
-			data.refreshBeforeRendering();
+			// refresh render properties
+			data.refreshRenderProperties();
 
-			String tags = TagsManager.getTagsFromName(customName.getString());
+			String tags = TagsManager.getTagsFromName(name.getString());
 			if (tags != null) {
+				// Editing render properties here
 				TagsManager.processTags(tags, data);
 			}
 
-			return data;
+			return data.applyRenderProperties(); // apply render properties
 		}
 
-		return StandardTotemDollManager.getStandardDoll().refreshBeforeRendering();
+		return StandardTotemDollManager.getStandardDoll().refreshAndApplyRenderProperties();
 	}
 
 	public static void setModdedModel(ItemStack itemStack, boolean modded) {

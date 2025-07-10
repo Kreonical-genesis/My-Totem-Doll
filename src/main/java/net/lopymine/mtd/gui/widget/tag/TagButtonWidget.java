@@ -99,16 +99,16 @@ public class TagButtonWidget extends ButtonWidget {
 		MinecraftClient client = MinecraftClient.getInstance();
 		Screen screen = client.currentScreen;
 
+		if (!this.isHovered()) {
+			return;
+		}
+
 		TooltipComponent component = this.getTooltipComponent();
 		if (component == null) {
 			return;
 		}
 
 		if (!(screen instanceof IRequestableTooltipScreen tooltipScreen)) {
-			return;
-		}
-
-		if (!this.isHovered()) {
 			return;
 		}
 

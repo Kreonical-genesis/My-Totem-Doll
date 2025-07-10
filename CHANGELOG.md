@@ -1,1 +1,5 @@
-- Fixed issue with skin loading (using another Mojang API)
+- Ported to 1.21.6–7 (screw them with their new render caching, but in some ways I like it)
+- Reworked rendering shenanigans for 1.21.6 support, this also (probably) means better arms handling, when doll should use slim or wide arms
+- Fixed elytra model for 3d doll
+- Dolls on Welcome Screen now have your current skin
+- Fixed issue with crashing after resource reloading

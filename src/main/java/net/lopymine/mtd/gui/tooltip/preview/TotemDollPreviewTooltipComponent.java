@@ -1,6 +1,7 @@
 package net.lopymine.mtd.gui.tooltip.preview;
 
 import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.doll.renderer.*;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -11,18 +12,18 @@ import net.minecraft.util.Identifier;
 import net.lopymine.mtd.client.MyTotemDollClient;
 import net.lopymine.mtd.config.MyTotemDollConfig;
 import net.lopymine.mtd.doll.data.TotemDollData;
-import net.lopymine.mtd.doll.renderer.TotemDollRenderer;
 import net.lopymine.mtd.extension.IdentifierExtension;
 
 @ExtensionMethod(IdentifierExtension.class)
 public class TotemDollPreviewTooltipComponent implements TooltipComponent {
 
 	private final TotemDollData data;
-	private final Identifier model;
+	private final Identifier modelId;
 
-	public TotemDollPreviewTooltipComponent(TotemDollData data, Identifier model) {
-		this.data = data;
-		this.model = model;
+	public TotemDollPreviewTooltipComponent(TotemDollData data, Identifier modelId) {
+		this.data    = data;
+		this.modelId = modelId;
+		this.data.setStandardMModel(modelId);
 	}
 
 	@Override
@@ -41,13 +42,14 @@ public class TotemDollPreviewTooltipComponent implements TooltipComponent {
 		MyTotemDollConfig config = MyTotemDollClient.getConfig();
 		float sizeOriginal = config.getBetterTagMenuTooltipSize();
 		float size = (sizeOriginal / 1.25F) * config.getTagMenuTooltipModelScale();
-		Text text = Text.of(this.model.getFileName());
+		Text text = Text.of(this.modelId.getFileName());
 		int textWidth = textRenderer.getWidth(text);
 
 		int height = this.getHeight(/*? >=1.21.2 {*/textRenderer/*?}*/);
 		context.enableScissor(x, y + 10 + 4 + 2, x + width, y + height - 2);
-		this.data.setTempModel(this.model);
-		TotemDollRenderer.renderPreview(context, x, y + 10, width, height - 10, size, this.data);
+
+		TotemDollRenderer.renderPreview(context, x, y + 10, width, height - 10, size, this.data, DollRenderContext.D_TOOLTIP);
+
 		context.disableScissor();
 
 		context.enableScissor(x, y, x + width, y + height);

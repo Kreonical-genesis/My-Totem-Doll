@@ -1,5 +1,9 @@
 package net.lopymine.mtd.gui.screen;
 
+import net.lopymine.mtd.config.totem.TotemDollArmsType;
+import net.lopymine.mtd.doll.data.*;
+import net.lopymine.mtd.thread.MyTotemDollTaskExecutor;
+import net.lopymine.mtd.utils.texture.PlayerSkinUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.*;
@@ -76,6 +80,39 @@ public class WelcomeScreen extends Screen {
 
 		WelcomeTotemDollModelPreviewWidget widget = new WelcomeTotemDollModelPreviewWidget(area.getX(), area.getY(), area.getWidth(), runnable);
 		widget.updateModel(modelId);
+
+		//? if >=1.21 {
+		MinecraftClient.getInstance().getSkinProvider().fetchSkinTextures(MinecraftClient.getInstance().getGameProfile()).thenAccept((/*? if >=1.21.4 {*/ optional /*?} else {*/ /*skinTextures *//*?}*/) -> {
+			//? if >=1.21.4 {
+			if (optional.isEmpty()) {
+				return;
+			}
+			net.minecraft.client.util.SkinTextures skinTextures = optional.get();
+			//?}
+			widget.getData().setTextures(TotemDollTextures.of(skinTextures, true));
+		});
+		//?} else {
+
+		/*MinecraftClient.getInstance().getSkinProvider().loadSkin(MinecraftClient.getInstance().getSession().getProfile(), (type, id, texture) -> {
+			MyTotemDollTaskExecutor.execute(() -> {
+				MinecraftClient.getInstance().execute(() -> {
+					TotemDollTextures textures = widget.getData().getTextures();
+					switch (type) {
+						case CAPE -> textures.setCapeTexture(PlayerSkinUtils.remapTextureIfRequired(id));
+						case SKIN -> {
+							textures.setSkinTexture(id);
+							if (texture != null) {
+								textures.setArmsType(TotemDollArmsType.of(texture.getMetadata("model")));
+							}
+						}
+						case ELYTRA -> textures.setElytraTexture(id);
+					}
+				});
+			});
+		}, false);
+
+		*///?}
+
 		return widget;
 	}
 

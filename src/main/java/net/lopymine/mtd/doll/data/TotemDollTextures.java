@@ -3,7 +3,6 @@ package net.lopymine.mtd.doll.data;
 import lombok.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.entity.model.EntityModels;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 
@@ -49,17 +48,23 @@ public class TotemDollTextures {
 
 	public static TotemDollTextures of(AbstractClientPlayerEntity player) {
 		//? if >=1.21 {
-		net.minecraft.client.util.SkinTextures skinTextures = player.getSkinTextures();
-		Identifier capeTexture = PlayerSkinUtils.remapTextureIfRequired(skinTextures.capeTexture());
-		TotemDollTextures totemDollTextures = new TotemDollTextures(skinTextures.texture(), capeTexture, skinTextures.elytraTexture(), TotemDollArmsType.of(skinTextures.model().getName()));
+		return of(player.getSkinTextures(), true);
 		//?} else {
 		/*Identifier capeTexture = PlayerSkinUtils.remapTextureIfRequired(player.getCapeTexture());
 		TotemDollTextures totemDollTextures = new TotemDollTextures(player.getSkinTexture(), capeTexture, player.getElytraTexture(), TotemDollArmsType.of(player.getModel()));
+		totemDollTextures.setState(LoadingState.DOWNLOADED);
+		return totemDollTextures;
 		*///?}
+	}
 
+	//? if >=1.21 {
+	public static TotemDollTextures of(net.minecraft.client.util.SkinTextures skinTextures, boolean remapCape) {
+		Identifier capeTexture = remapCape ? PlayerSkinUtils.remapTextureIfRequired(skinTextures.capeTexture()) : skinTextures.capeTexture();
+		TotemDollTextures totemDollTextures = new TotemDollTextures(skinTextures.texture(), capeTexture, skinTextures.elytraTexture(), TotemDollArmsType.of(skinTextures.model().getName()));
 		totemDollTextures.setState(LoadingState.DOWNLOADED);
 		return totemDollTextures;
 	}
+	//?}
 
 	public void setStandardArmsType(TotemDollArmsType standardArmsType) {
 		this.armsType = standardArmsType;

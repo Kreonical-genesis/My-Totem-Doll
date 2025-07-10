@@ -1,15 +1,14 @@
 package net.lopymine.mtd.gui;
 
+import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.extension.DrawContextExtension;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.lopymine.mtd.utils.*;
 import net.lopymine.mtd.yacl.custom.TransparencySprites;
 
+@ExtensionMethod(DrawContextExtension.class)
 public class BackgroundRenderer {
 
 	public static void drawTransparencyWidgetBackground(DrawContext context, int x, int y, int width, int height, boolean enabled, boolean hovered) {
@@ -51,9 +50,6 @@ public class BackgroundRenderer {
 	}
 
 	public static void drawTransparencyBackground(DrawContext context, int x, int y, int width, int height, Identifier backgroundTexture, Identifier separatorTexture, boolean up, boolean bottom, boolean right, boolean left) {
-
-		MatrixStack matrices = context.getMatrices();
-
 		RenderUtils.enableBlend();
 
 		// BACKGROUND
@@ -66,29 +62,29 @@ public class BackgroundRenderer {
 
 		// BOTTOM
 		if (bottom) {
-			matrices.push();
-			matrices.translate(x + width - 2, y + height, 0);
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
+			context.push();
+			context.translate(x + width - 2, y + height, 0);
+			context.rotateZ(180);
 			DrawUtils.drawTexture(context, separatorTexture, 0, 0, 0, 0, width - 4, 2, 32, 2);
-			matrices.pop();
+			context.pop();
 		}
 
 		// RIGHT
 		if (right) {
-			matrices.push();
-			matrices.translate(x + width, y + 1, 0);
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
+			context.push();
+			context.translate(x + width, y + 1, 0);
+			context.rotateZ(90);
 			DrawUtils.drawTexture(context, separatorTexture, 0, 0, 0f, 0f, height - 2, 2, 32, 2);
-			matrices.pop();
+			context.pop();
 		}
 
 		// LEFT
 		if (left) {
-			matrices.push();
-			matrices.translate(x, y + height - 1, 0);
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90));
+			context.push();
+			context.translate(x, y + height - 1, 0);
+			context.rotateZ(-90);
 			DrawUtils.drawTexture(context, separatorTexture, 0, 0, 0f, 0f, height - 2, 2, 32, 2);
-			matrices.pop();
+			context.pop();
 		}
 
 		// UP-LEFT CORNER

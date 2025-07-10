@@ -24,7 +24,10 @@ public enum DollRenderContext {
 	D_GROUND("ground"),
 	D_FIXED("fixed"),
 
-	D_FLOATING("fixed");
+	D_FLOATING("floating"),
+	D_PREVIEW("preview"),
+	D_TOOLTIP("tooltip"),
+	D_CUSTOM("custom");
 
 	private final String id;
 

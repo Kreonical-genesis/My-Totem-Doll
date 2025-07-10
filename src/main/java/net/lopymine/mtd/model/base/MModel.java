@@ -25,6 +25,7 @@ import org.jetbrains.annotations.*;
 @ExtensionMethod({ModelTransformExtension.class, DilationExtension.class, IdentifierExtension.class})
 public class MModel extends ModelPart {
 
+	@Setter(AccessLevel.PRIVATE)
 	private ModelTransformation transformation = ModelTransformation.NONE;
 	private final Map<String, MModel> mChildren;
 	private final List<MCuboid> mCuboids;
@@ -57,7 +58,6 @@ public class MModel extends ModelPart {
 
 	public void setLocation(@NotNull Identifier location) {
 		this.location = location;
-
 
 		String name = this.getName();
 		try {
@@ -101,7 +101,7 @@ public class MModel extends ModelPart {
 			list.addAll(value.findModels(suffix).getModels());
 		}
 
-		return new MModelCollection(list);
+		return new MModelCollection(list, suffix);
 	}
 
 	public ModelPart asModelPart() {
@@ -239,5 +239,21 @@ public class MModel extends ModelPart {
 	@Override
 	public String toString() {
 		return "%s [%s]".formatted(this.getName(), this.getState().name().toUpperCase());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof MModel that)) {
+			return false;
+		}
+		if (that == this) {
+			return true;
+		}
+		return Objects.equals(this.getLocation(), that.getLocation());
+	}
+
+	@Override
+	public int hashCode() {
+		return this.getLocation() == null ? super.hashCode() : this.getLocation().hashCode();
 	}
 }

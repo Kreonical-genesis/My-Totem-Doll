@@ -20,8 +20,14 @@ public abstract class ScreenMixin {
 
 	//? if >=1.20.5 {
 
-	@WrapWithCondition(method = "renderBackground", at = @At(value = "INVOKE", target = /*? >=1.21.2 {*/ "Lnet/minecraft/client/gui/screen/Screen;applyBlur()V" /*?} else {*/ /*"Lnet/minecraft/client/gui/screen/Screen;applyBlur(F)V" *//*?}*/))
-	public boolean disableBlur(Screen instance /*? <=1.21.1 {*//*, float v *//*?}*/) {
+	@WrapWithCondition(method = "renderBackground", at = @At(value = "INVOKE",
+			target = /*? if >=1.21.6 {*/ "Lnet/minecraft/client/gui/screen/Screen;applyBlur(Lnet/minecraft/client/gui/DrawContext;)V"
+			/*?} elif >=1.21.2 {*/
+			/*"Lnet/minecraft/client/gui/screen/Screen;applyBlur()V"
+			*//*?} else {*/
+			/*"Lnet/minecraft/client/gui/screen/Screen;applyBlur(F)V"
+			*//*?}*/))
+	public boolean disableBlur(Screen instance /*? if >=1.21.6 {*/, DrawContext context /*?} elif <=1.21.1 {*/ /*, float v  *//*?}*/) {
 		return YACLConfigurationScreen.notOpen(((Screen) (Object) this));
 	}
 
@@ -46,7 +52,7 @@ public abstract class ScreenMixin {
 	}
 
 	@Unique
-	private static final String INJECT_METHOD = /^? >=1.20.2 {^/ /^"renderInGameBackground" ^//^?} else {^/ "renderBackground" /^?}^/;
+	private static final String INJECT_METHOD = /^? >=1.20.2 {^/ "renderInGameBackground" /^?} else {^/ /^"renderBackground" ^//^?}^/;
 
 	@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fillGradient(IIIIII)V"), method = INJECT_METHOD)
 	private void swapBackgroundGradientColor(DrawContext context, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, Operation<Void> original) {
@@ -59,7 +65,7 @@ public abstract class ScreenMixin {
 
 	//? if <=1.20.1 {
 
-	@Shadow public abstract void renderBackground(DrawContext context);
+	/^@Shadow public abstract void renderBackground(DrawContext context);
 
 	@Inject(at = @At("HEAD"), method = "render")
 	private void renderWithBackground(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -68,7 +74,7 @@ public abstract class ScreenMixin {
 		}
 	}
 
-	//?}
+	^///?}
 
 	*///?}
 }

@@ -1,7 +1,6 @@
 package net.lopymine.mtd.doll.model;
 
 import lombok.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,6 +38,8 @@ public class TotemDollModel extends Model {
 			elytra,
 			ears;
 
+	private final Map<String, MModelCollection> collections = new HashMap<>();
+
 	private boolean slim;
 
 	private Drawer drawer;
@@ -59,6 +60,8 @@ public class TotemDollModel extends Model {
 		this.elytra = root.findModels("elytra");
 		this.ears   = root.findModels("ears");
 
+		this.initCollectionsMap();
+
 		this.main = root;
 		this.slim = slim;
 
@@ -68,6 +71,27 @@ public class TotemDollModel extends Model {
 		disableIfPresent(this.rightArmWide);
 
 		this.resetPartsVisibility();
+	}
+
+	private void initCollectionsMap() {
+		this.addCollectionToCollectionsMap(this.head);
+		this.addCollectionToCollectionsMap(this.body);
+		this.addCollectionToCollectionsMap(this.leftArmSlim);
+		this.addCollectionToCollectionsMap(this.rightArmSlim);
+		this.addCollectionToCollectionsMap(this.leftArmWide);
+		this.addCollectionToCollectionsMap(this.rightArmWide);
+		this.addCollectionToCollectionsMap(this.leftLeg);
+		this.addCollectionToCollectionsMap(this.rightLeg);
+		this.addCollectionToCollectionsMap(this.cape);
+		this.addCollectionToCollectionsMap(this.elytra);
+		this.addCollectionToCollectionsMap(this.ears);
+	}
+
+	private void addCollectionToCollectionsMap(MModelCollection collection) {
+		if (collection.isEmpty()) {
+			return;
+		}
+		this.collections.put(collection.getId(), collection);
 	}
 
 	public static MModel createDollModel() {
@@ -109,7 +133,7 @@ public class TotemDollModel extends Model {
 	//? <=1.21.1 {
 
 	/*@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, /^? if >=1.21 {^/ /^int color ^//^?} else {^/ float r, float g, float b, float a/^?}^/) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, /^? if >=1.21 {^/ int color /^?} else {^/ /^float r, float g, float b, float a^//^?}^/) {
 		// NO-OP
 	}
 
@@ -134,6 +158,11 @@ public class TotemDollModel extends Model {
 		}
 		this.drawer.prepareForRender();
 		return this.drawer;
+	}
+
+	@Nullable
+	public MModelCollection getCollectionOfPart(String part) {
+		return this.collections.get(part);
 	}
 
 	public static class Drawer {

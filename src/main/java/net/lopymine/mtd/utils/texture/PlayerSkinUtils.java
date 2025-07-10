@@ -26,7 +26,6 @@ public class PlayerSkinUtils {
 
 	public static void downloadSkin(@NotNull String textureUrl, @NotNull Identifier textureId, @Nullable SuccessAction onSuccessRegistration, @Nullable FailedAction onFailedRegistration, boolean cape, Path cachedTexturePath) {
 		try {
-			// TODO check with completable future
 			Supplier<AbstractTexture> supplier = PlayerSkinUtils.download(cachedTexturePath, textureUrl, cape, textureId); // DO NOT CLOSE
 
 			MinecraftClient.getInstance().send(() -> {
@@ -68,7 +67,7 @@ public class PlayerSkinUtils {
 		NativeImage image = download;
 		return () -> new NativeImageBackedTexture(/*? if >=1.21.5 {*/ id::toString, /*?}*/ image);
 		//?} else {
-		/*return () -> new PlayerSkinTexture(path.toFile(), uri, DefaultSkinHelper.getTexture(), true, () -> {
+		/*return () -> new PlayerSkinTexture(path.toFile(), uri, DefaultSkinHelper.getTexture(), cape, () -> {
 			try {
 				if (path.toFile().exists()) {
 					Files.delete(path);
@@ -94,7 +93,11 @@ public class PlayerSkinUtils {
 		}
 		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 		Identifier identifier = MyTotemDoll.id("remapped_textures/%s.png".formatted(MathHelper.abs(id.toString().hashCode())));
-		AbstractTexture remappedTexture = textureManager.getTexture(identifier);
+		AbstractTexture remappedTexture = null;
+		try {
+			remappedTexture = textureManager.getTexture(identifier);
+		} catch (Exception ignored) {
+		}
 		if (remappedTexture instanceof NativeImageBackedTexture) {
 			return identifier;
 		}
@@ -116,7 +119,9 @@ public class PlayerSkinUtils {
 					return id;
 				}
 			}
-		} else if (texture instanceof ResourceTexture) {
+		} else
+		*///?}
+		 if (texture instanceof ResourceTexture) {
 			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
 			try {
 				InputStream open = resourceManager.open(id);
@@ -128,7 +133,6 @@ public class PlayerSkinUtils {
 				return id;
 			}
 		}
-		*///?}
 		if (image == null || (image.getWidth() == 64 && image.getHeight() == 64)) {
 			return id;
 		}

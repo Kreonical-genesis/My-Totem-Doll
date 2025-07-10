@@ -9,6 +9,7 @@ import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.component.ComponentType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -58,6 +59,7 @@ public class ItemModelManagerMixin {
 			return TotemDollPlugin.ID;
 		}
 
+		stack.setModdedModel(false);
 		return supplier.get();
 	}
 
@@ -67,7 +69,9 @@ public class ItemModelManagerMixin {
 		if (entity instanceof AbstractClientPlayerEntity player) {
 			stack.setPlayerEntity(player);
 		}
-		((ItemRenderStateWithStack) renderState).myTotemDoll$setStack(stack);
+		if (renderState instanceof ItemRenderStateWithStack itemRenderStateWithStack) {
+			itemRenderStateWithStack.myTotemDoll$setStack(stack);
+		}
 	}
 
 }

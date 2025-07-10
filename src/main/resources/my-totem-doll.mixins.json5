@@ -17,14 +17,22 @@
 	    "ItemRenderStateMixin",
 	    //?}
 
+	    //? if <=1.21.5 {
+	    /*"GameRendererMixin",
+	    *///?}
+
 	    //? if >=1.21.2 && <=1.21.3 {
 	    /*"ItemEntityRendererMixin",
 		"LivingEntityRendererMixin",
 		*///?}
 
+	    //? if >=1.21.6 {
+	    "DrawContextMixin",
+	    "InGameOverlayRendererMixin",
+	    "GuiRendererMixin",
+	    //?}
 
 	    "accessor.DilationAccessor",
-	    "GameRendererMixin",
 	    "AnvilScreenMixin",
 	    "AnvilScreenHandlerMixin",
 	    "ScreenMixin",
@@ -35,7 +43,6 @@
 	    "ItemStackMixin",
 	    "HandledScreenMixin",
 	    "MinecraftClientMixin",
-	    "ResourceTextureMixin",
 	    "TextureManagerMixin"
     ],
     "injectors": {

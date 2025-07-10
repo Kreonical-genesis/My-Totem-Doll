@@ -11,7 +11,6 @@ import net.lopymine.mtd.config.MyTotemDollConfig;
 import net.lopymine.mtd.config.totem.*;
 import net.lopymine.mtd.doll.data.*;
 import net.lopymine.mtd.skin.provider.extended.MojangSkinProvider;
-import net.lopymine.mtd.utils.plugin.TotemDollPlugin;
 import net.lopymine.mtd.utils.texture.*;
 
 
@@ -28,27 +27,26 @@ public class StandardTotemDollManager {
 	@NotNull
 	public static TotemDollData getStandardDoll() {
 		if (DEFAULT_DOLL == null) {
-			return updateDoll();
+			return initializeStandardDollData();
 		}
 		return DEFAULT_DOLL;
 	}
 
-	public static TotemDollData updateDoll() {
-		DEFAULT_DOLL = applyConfigValues(loadStandardDoll());
+	public static TotemDollData initializeStandardDollData() {
+		DEFAULT_DOLL = overrideWithConfigValues(loadStandardDoll());
 		return DEFAULT_DOLL;
 	}
 
-	public static TotemDollData updateDollState(boolean recreateModel) {
+	public static TotemDollData updateDoll(boolean recreateModel) {
 		TotemDollData standardDoll = getStandardDoll();
-		applyConfigValues(standardDoll);
-		standardDoll.setShouldRecreateModel(recreateModel);
-		return standardDoll.refreshBeforeRendering();
+		overrideWithConfigValues(standardDoll);
+		standardDoll.setShouldRecreateStandardModel(recreateModel);
+		return standardDoll.refreshAndApplyRenderProperties();
 	}
 
-	public static TotemDollData applyConfigValues(TotemDollData data) {
+	public static TotemDollData overrideWithConfigValues(TotemDollData data) {
 		MyTotemDollConfig config = MyTotemDollClient.getConfig();
-		TotemDollArmsType armsType = config.getStandardTotemDollArmsType();
-		data.getTextures().setStandardArmsType(armsType);
+		data.getTextures().setStandardArmsType(config.getStandardTotemDollArmsType());
 		return data;
 	}
 

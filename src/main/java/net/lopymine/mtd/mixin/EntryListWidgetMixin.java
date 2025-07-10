@@ -55,7 +55,7 @@ public abstract class EntryListWidgetMixin {
 
 	//? if <1.21 {
 	/*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/EntryListWidget;getMaxScroll()I"), method = "render")
-	private int generated(EntryListWidget<?> instance, Operation<Integer> original) {
+	private int fixMTDMaxScroll(EntryListWidget<?> instance, Operation<Integer> original) {
 		if (instance instanceof ListWithStaticHeaderWidget<?> listWithStaticHeaderWidget && !listWithStaticHeaderWidget.isScrollbarVisible()) {
 			return 0;
 		}

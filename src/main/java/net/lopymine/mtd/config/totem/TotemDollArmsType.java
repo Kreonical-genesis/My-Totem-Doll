@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 
 import net.lopymine.mtd.MyTotemDoll;
 import net.lopymine.mtd.config.other.EnumWithText;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 public enum TotemDollArmsType implements StringIdentifiable, EnumWithText {
@@ -25,7 +26,10 @@ public enum TotemDollArmsType implements StringIdentifiable, EnumWithText {
 		return slim ? SLIM : WIDE;
 	}
 
-	public static TotemDollArmsType of(String s) {
+	public static TotemDollArmsType of(@Nullable String s) {
+		if (s == null) {
+			return WIDE;
+		}
 		return s.equals("slim") ? SLIM : WIDE;
 	}
 

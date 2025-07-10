@@ -1,10 +1,12 @@
 package net.lopymine.mtd.gui.widget.tag;
 
 import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.doll.data.TotemDollData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.*;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
@@ -128,8 +130,9 @@ public class TagMenuWidget extends ListWithStaticHeaderWidget<TagRow> {
 	}
 
 	private void updateCustomModelTagButtonsData(ItemStack stack) {
+		TotemDollData totemDollData = stack.getTotemDollData();
 		for (CustomModelTagButtonWidget widget : this.getCustomModelTagButtons()) {
-			widget.updateData(stack.getTotemDollData());
+			widget.updateData(totemDollData);
 		}
 	}
 
@@ -271,7 +274,7 @@ public class TagMenuWidget extends ListWithStaticHeaderWidget<TagRow> {
 				}
 
 				tooltipScreen.myTotemDoll$requestTooltip(((c, mx, my, d) -> {
-					c.drawOrderedTooltip(textRenderer, textRenderer.wrapLines(this.text, 10000), mx, my);
+					DrawUtils.drawTooltip(context, textRenderer.wrapLines(this.text, 10000).stream().map(TooltipComponent::of).collect(Collectors.toList()), mx, my);
 				}));
 			}
 		}

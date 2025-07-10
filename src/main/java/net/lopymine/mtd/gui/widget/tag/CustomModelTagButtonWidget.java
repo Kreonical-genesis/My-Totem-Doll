@@ -27,6 +27,9 @@ public class CustomModelTagButtonWidget extends TagButtonWidget {
 	@Nullable
 	private final Identifier model;
 	private TotemDollData data;
+	@Nullable
+	private TotemDollData tooltipData;
+	private boolean tooltipDataActive = false;
 
 	public CustomModelTagButtonWidget(Tag tag, int x, int y, TagPressAction pressAction) {
 		super(tag, x, y, pressAction);
@@ -39,15 +42,22 @@ public class CustomModelTagButtonWidget extends TagButtonWidget {
 			return;
 		}
 		this.data = data.copy();
+		this.data.setStandardMModel(this.model);
+	}
+
+	@Override
+	public void /*? if >=1.21 {*/renderWidget/*?} else {*//*renderButton*//*?}*/(DrawContext context, int mouseX, int mouseY, float delta) {
+		super./*? if >=1.21 {*/renderWidget/*?} else {*//*renderButton*//*?}*/(context, mouseX, mouseY, delta);
+		if (!this.tooltipDataActive) {
+			this.tooltipData = null;
+		}
+		this.tooltipDataActive = false;
 	}
 
 	@Override
 	protected void renderIcon(DrawContext context, int x, int y) {
-		if (this.model != null) {
-			this.data.setTempModel(this.model);
-		}
 		context.enableScissor(this.getX() + 1, this.getY() + 1, this.getX() + this.getWidth() - 1, this.getY() + this.getHeight() - 1);
-		TotemDollRenderer.renderPreview(context, x, y, this.getWidth(), this.getHeight(),  Math.min(this.getWidth(), this.getHeight()), this.data);
+		TotemDollRenderer.renderPreview(context, x, y, this.getWidth(), this.getHeight(),  Math.min(this.getWidth(), this.getHeight()), this.getData().refreshAndApplyRenderProperties());
 		context.disableScissor();
 	}
 
@@ -56,7 +66,12 @@ public class CustomModelTagButtonWidget extends TagButtonWidget {
 		if (this.model == null) {
 			return TooltipComponent.of(Text.of("Unknown Model").asOrderedText());
 		}
-		return TooltipComponent.of(new TotemDollPreviewTooltipData(this.data, this.model));
+		if (this.tooltipData == null) {
+			this.tooltipData = this.data.copy();
+			this.tooltipData.setStandardMModel(this.data.getRenderProperties().getStandardMModel());
+		}
+		this.tooltipDataActive = true;
+		return TooltipComponent.of(new TotemDollPreviewTooltipData(this.tooltipData, this.model));
 	}
 
 	@Override

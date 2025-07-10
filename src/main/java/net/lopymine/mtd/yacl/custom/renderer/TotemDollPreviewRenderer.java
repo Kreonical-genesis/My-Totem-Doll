@@ -1,11 +1,12 @@
 package net.lopymine.mtd.yacl.custom.renderer;
 
 import dev.isxander.yacl3.gui.image.ImageRenderer;
+import lombok.experimental.ExtensionMethod;
+import net.lopymine.mtd.extension.DrawContextExtension;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.*;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 
 import net.lopymine.mtd.MyTotemDoll;
 import net.lopymine.mtd.client.MyTotemDollClient;
@@ -18,8 +19,10 @@ import net.lopymine.mtd.gui.BackgroundRenderer;
 import net.lopymine.mtd.utils.ColorUtils;
 import net.lopymine.mtd.utils.plugin.TotemDollPlugin;
 
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+@ExtensionMethod(DrawContextExtension.class)
 public class TotemDollPreviewRenderer implements ImageRenderer {
 
 	private static final int STANDARD_SUGGESTION_TEXT_COLOR = ColorUtils.getArgb(255, 79, 64);
@@ -77,15 +80,13 @@ public class TotemDollPreviewRenderer implements ImageRenderer {
 			return y;
 		}
 
-		MatrixStack matrices = context.getMatrices();
-
-		matrices.push();
-		matrices.translate(0, 0, 10);
+		context.push();
+		context.translate(0, 0, 10);
 		int i = this.suggestionText.draw(context, x + 5, y + 5, 10, suggestionColor);
-		matrices.translate(0, 0, -5);
+		context.translate(0, 0, -5);
 		BackgroundRenderer.drawTransparencyWidgetBackground(context, x, y, width, i - y + 5, true, suggestionColor);
 
-		matrices.pop();
+		context.pop();
 
 		return i + 5 + 10;
 	}
@@ -110,7 +111,7 @@ public class TotemDollPreviewRenderer implements ImageRenderer {
 
 		BackgroundRenderer.drawTransparencyWidgetBackground(context, x, y, size, size, true, true);
 
-		TotemDollRenderer.renderPreview(context, x, y, size, size, size / 1.5F, config.isUseVanillaTotemModel() || TotemDollPlugin.isGoodStick(config.getStandardTotemDollSkinValue()) ? null : this.data);
+		TotemDollRenderer.renderPreview(context, x, y, size, size, size / 1.5F, config.isUseVanillaTotemModel() || TotemDollPlugin.isGoodStick(config.getStandardTotemDollSkinValue()) ? null : this.data.refreshAndApplyRenderProperties());
 
 		return y + size + 2;
 	}
@@ -121,10 +122,10 @@ public class TotemDollPreviewRenderer implements ImageRenderer {
 	}
 
 	public void updateDoll() {
-		this.data = StandardTotemDollManager.updateDoll();
+		this.data = StandardTotemDollManager.initializeStandardDollData();
 	}
 
 	public void updateDollState(boolean recreateModel) {
-		this.data = StandardTotemDollManager.updateDollState(recreateModel);
+		this.data = StandardTotemDollManager.updateDoll(recreateModel);
 	}
 }

@@ -90,6 +90,15 @@ public class BlockBenchModelManager {
 		consumer.accept(Response.of(value == null ? -1 : 0, value));
 	}
 
+	public static void consumeModelById(Identifier id, Consumer<MModel> consumer) {
+		BlockBenchModelManager.getModelAsyncAsResponse(id, (response) -> {
+			if (!response.isEmpty()) {
+				MModel value = response.value();
+				consumer.accept(value);
+			}
+		});
+	}
+
 	@Nullable
 	private static BBModel parseModel(Identifier id) {
 		try {
@@ -253,10 +262,10 @@ public class BlockBenchModelManager {
 	public static void reload() {
 		LOADED_MODELS.clear();
 		for (TotemDollData data : TotemDollManager.getAllLoadedDolls()) {
-			data.clearAllTempModels();
-			data.setShouldRecreateModel(true);
+			data.clearAllFrameModelsCompletely();
+			data.setShouldRecreateStandardModel(true);
 		}
 		TotemDollModel.createDollModel(); // Reloading doll at resource reloading while we can
-		StandardTotemDollManager.updateDoll();
+		StandardTotemDollManager.initializeStandardDollData();
 	}
 }

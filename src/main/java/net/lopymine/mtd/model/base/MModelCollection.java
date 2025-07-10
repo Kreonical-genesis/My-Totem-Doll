@@ -9,22 +9,25 @@ import java.util.List;
 public class MModelCollection {
 
 	private final List<MModel> models;
+	private final String id;
 	private int skipRendering = -1;
 	private int visible = -1;
 
-	public MModelCollection(List<MModel> models) {
+	public MModelCollection(List<MModel> models, String id) {
 		this.models = models;
+		this.id = id;
 	}
 
-	public void setVisible(boolean visible) {
+	public boolean setVisible(boolean visible) {
 		int state = visible ? 1 : 0;
 		if (this.visible == state) {
-			return;
+			return false;
 		}
 		this.visible = state;
 		for (MModel model : this.models) {
 			model.visible = visible;
 		}
+		return true;
 	}
 
 	public void setSkipRendering(boolean skipRendering) {
@@ -37,4 +40,10 @@ public class MModelCollection {
 			model.setSkipRendering(skipRendering);
 		}
 	}
+
+	public boolean isEmpty() {
+		return this.models.isEmpty();
+	}
+
+	// DO NOT IMPLEMENT EQUALS AND HASHCODE HERE
 }

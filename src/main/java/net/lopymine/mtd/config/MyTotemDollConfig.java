@@ -45,7 +45,7 @@ public class MyTotemDollConfig {
 					.forGetter(MyTotemDollConfig::getBetterTagMenuTooltipSize),
 
 			optional("tag_menu_tooltip_model_scale", 1.0F, Codec.FLOAT, MyTotemDollConfig::getTagMenuTooltipModelScale),
-			optional("executor_threads_count", 6, Codec.INT, MyTotemDollConfig::getExecutorThreadsCount),
+			optional("executor_threads_count", 6, Codec.INT, MyTotemDollConfig::getParallelTasksCount),
 			optional("first_run", true, Codec.BOOL, MyTotemDollConfig::isFirstRun),
 			optional("support_other_mods_totems", true, Codec.BOOL, MyTotemDollConfig::isSupportOtherModsTotems)
 	).apply(instance, MyTotemDollConfig::new));
@@ -65,7 +65,7 @@ public class MyTotemDollConfig {
 	private boolean useVanillaTotemModel;
 	private int betterTagMenuTooltipSize;
 	private float tagMenuTooltipModelScale;
-	private int executorThreadsCount;
+	private int parallelTasksCount;
 	private boolean firstRun;
 	private boolean supportOtherModsTotems;
 
@@ -81,9 +81,9 @@ public class MyTotemDollConfig {
 		this.useVanillaTotemModel        = false;
 		this.betterTagMenuTooltipSize    = 60;
 		this.tagMenuTooltipModelScale    = 1.0F;
-		this.executorThreadsCount        = 6;
-		this.firstRun               = true;
-		this.supportOtherModsTotems = true;
+		this.parallelTasksCount          = 6;
+		this.firstRun                    = true;
+		this.supportOtherModsTotems      = true;
 	}
 
 	public static MyTotemDollConfig getInstance() {

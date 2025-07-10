@@ -126,7 +126,7 @@ public abstract class ListWithStaticHeaderWidget<E extends Entry<E>> extends Ele
 	//?} else {
 
 
-	/*/^? if >=1.21 {^//^@Override^//^?}^/
+	/*/^? if >=1.21 {^/@Override/^?}^/
 	public boolean isScrollbarVisible() {
 		return this.needScrollBar();
 	}

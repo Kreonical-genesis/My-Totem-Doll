@@ -36,12 +36,17 @@ public class RefreshCommand {
 	}
 
 	private static int reloadAll(CommandContext<FabricClientCommandSource> context) {
+		if (RefreshCommand.currentRefreshingFuture != null) {
+			return 0;
+		}
+
 		Text startFeedback = CommandTextBuilder.startBuilder("command.refresh.all.start").build();
 		context.getSource().sendFeedback(startFeedback);
 
 		RefreshCommand.currentRefreshingFuture = TotemDollManager.reload((seconds) -> {
 			Text endFeedback = CommandTextBuilder.startBuilder("command.refresh.all.end", seconds).build();
 			context.getSource().sendFeedback(endFeedback);
+			RefreshCommand.currentRefreshingFuture = null;
 		});
 
 		MojangAPI.useFallbackAPI = false;
@@ -50,6 +55,10 @@ public class RefreshCommand {
 	}
 
 	private static int reloadForPlayer(CommandContext<FabricClientCommandSource> context) {
+		if (RefreshCommand.currentRefreshingFuture != null) {
+			return 0;
+		}
+
 		String nickname = StringArgumentType.getString(context, "nickname");
 		Text startFeedback = CommandTextBuilder.startBuilder("command.refresh.player.start", nickname).build();
 		context.getSource().sendFeedback(startFeedback);
@@ -57,6 +66,7 @@ public class RefreshCommand {
 		RefreshCommand.currentRefreshingFuture = TotemDollManager.reload(nickname, (seconds) -> {
 			Text feedback = CommandTextBuilder.startBuilder("command.refresh.player.end", nickname, seconds).build();
 			context.getSource().sendFeedback(feedback);
+			RefreshCommand.currentRefreshingFuture = null;
 		});
 
 		return Command.SINGLE_SUCCESS;

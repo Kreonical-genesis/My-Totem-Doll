@@ -16,7 +16,6 @@ import net.lopymine.mtd.pack.*;
 import net.lopymine.mtd.tag.manager.*;
 import net.lopymine.mtd.utils.plugin.TotemDollPlugin;
 
-import java.time.LocalDate;
 import org.jetbrains.annotations.Nullable;
 
 public class MyTotemDollClient implements ClientModInitializer {
@@ -38,6 +37,10 @@ public class MyTotemDollClient implements ClientModInitializer {
 		MyTotemDollReloadListener.register();
 		TotemDollPlugin.register();
 		TotemDollModelFinder.registerBuiltinModels();
+		//? if >=1.21.6 {
+		net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry.register(
+				context -> new net.lopymine.mtd.doll.renderer.special.ItemGuiElementRenderer(context.vertexConsumers()));
+		//?}
 	}
 
 	public static boolean canProcess(@Nullable ItemStack stack) {

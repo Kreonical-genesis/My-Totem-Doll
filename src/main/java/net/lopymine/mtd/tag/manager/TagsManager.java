@@ -5,8 +5,6 @@ import net.minecraft.util.*;
 
 import net.lopymine.mtd.MyTotemDoll;
 import net.lopymine.mtd.doll.data.TotemDollData;
-import net.lopymine.mtd.doll.model.TotemDollModel;
-import net.lopymine.mtd.model.base.MModel;
 import net.lopymine.mtd.pack.TotemDollModelFinder;
 import net.lopymine.mtd.tag.*;
 
@@ -31,24 +29,22 @@ public class TagsManager {
 	}
 
 	public static void register() {
-		// We need pre- and post-tags to avoid unnecessary overriding values in a model
-
 		registerPreprocessorTag(
 				Tag.startBuilder('0')
-						.setAction((data) -> data.getModel().setSlim(true))
+						.setAction((data) -> data.getRenderProperties().setSlim(true))
 						.build()
 		);
 
 		registerPreprocessorTag(
 				Tag.startBuilder('1')
-						.setAction((data) -> data.getModel().setSlim(false))
+						.setAction((data) -> data.getRenderProperties().setSlim(false))
 						.build()
 		);
 
 		registerPostprocessorTag(
 				Tag.startBuilder('2')
 						.setAction((data) -> {
-							TotemDollModel.disableIfPresent(data.getModel().getCape());
+							data.getRenderProperties().disable(data.getModelToRender().getCape());
 						})
 						.build()
 		);
@@ -56,8 +52,8 @@ public class TagsManager {
 		registerPostprocessorTag(
 				Tag.startBuilder('3')
 						.setAction((data) -> {
-							TotemDollModel.disableIfPresent(data.getModel().getCape());
-							TotemDollModel.enableIfPresent(data.getModel().getElytra());
+							data.getRenderProperties().disable(data.getModelToRender().getCape());
+							data.getRenderProperties().enable(data.getModelToRender().getElytra());
 						})
 						.build()
 		);
@@ -90,7 +86,7 @@ public class TagsManager {
 
 				CUSTOM_MODEL_IDS_TAGS.put(next,
 						CustomModelTag.startBuilder(next, id)
-								.setAction((data) -> data.setTempModel(id))
+								.setAction((data) -> data.setFrameMModel(id))
 								.build()
 				);
 			}
@@ -106,7 +102,7 @@ public class TagsManager {
 	private static void registerBuiltinCustomModel(char ch, String modelName) {
 		Identifier modelId = MyTotemDoll.getDollModelId(modelName);
 		CustomModelTag tag = CustomModelTag.startBuilder(ch, modelId)
-				.setAction((data) -> data.setTempModel(modelId))
+				.setAction((data) -> data.setFrameMModel(modelId))
 				.build();
 		CUSTOM_MODEL_IDS_TAGS.put(ch, tag);
 	}

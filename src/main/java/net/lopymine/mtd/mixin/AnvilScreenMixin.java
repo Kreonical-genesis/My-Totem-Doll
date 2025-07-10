@@ -174,13 +174,24 @@ public abstract class AnvilScreenMixin extends ForgingScreen<AnvilScreenHandler>
 		this.updateWidgetsPositions();
 	}
 
-	@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"), method = "drawForeground")
+	//? if >=1.21.6 {
+	@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)V"), method = "drawForeground")
+	private void swapBackgroundValue(DrawContext instance, TextRenderer textRenderer, Text text, int x, int y, int color, Operation<Integer> original) {
+		if (!MyTotemDollClient.getConfig().isModEnabled()) {
+			original.call(instance, textRenderer, text, x, y, color);
+			return;
+		}
+		original.call(instance, textRenderer, text, x - this.backgroundWidth + 176, y, color);
+	}
+	//?} else {
+	/*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"), method = "drawForeground")
 	private int swapBackgroundValue(DrawContext instance, TextRenderer textRenderer, Text text, int x, int y, int color, Operation<Integer> original) {
 		if (!MyTotemDollClient.getConfig().isModEnabled()) {
 			return original.call(instance, textRenderer, text, x, y, color);
 		}
 		return original.call(instance, textRenderer, text, x - this.backgroundWidth + 176, y, color);
 	}
+	*///?}
 
 	//? <1.21 {
 	/*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"), method = "drawInvalidRecipeArrow")

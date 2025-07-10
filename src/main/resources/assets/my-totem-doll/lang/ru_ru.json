@@ -14,10 +14,10 @@
 	"my-totem-doll.modmenu.option.debug_log_enabled.name": "&6Включить режим откладки",
 	"my-totem-doll.modmenu.option.debug_log_enabled.description": "Если включено, то в консоль игры будет выводиться допольнительная информация о функционировании мода; если не включён, не будет.",
 
-	"my-totem-doll.modmenu.group.threads.name": "&lПотоки",
-	"my-totem-doll.modmenu.group.threads.description": "Настройки потоков, которые отвечают за производительность мода!",
-	"my-totem-doll.modmenu.option.executor_threads_count.name": "Количество рабочих потоков",
-	"my-totem-doll.modmenu.option.executor_threads_count.description": "Указавает как много потоков будет выделено для работы мода My Totem Doll. В основном используется для загрузки скинов.",
+	"my-totem-doll.modmenu.group.parallel_tasks.name": "&lПараллельные задачи",
+	"my-totem-doll.modmenu.group.parallel_tasks.description": "Настройки параллельных задач, которые отвечают за производительность мода и нагрузку на ваш майнкрафт!",
+	"my-totem-doll.modmenu.option.parallel_tasks_count.name": "Максимальное количество параллельных задач",
+	"my-totem-doll.modmenu.option.parallel_tasks_count.description": "Указывает то, как много параллельных задач может быть запущено модов, к примеру сколько максимум скинов может скачиваться параллельно.",
 
 	"my-totem-doll.modmenu.category.rendering.name": "&lОтображение",
 	"my-totem-doll.modmenu.group.right_hand.name": "&lПравая рука",

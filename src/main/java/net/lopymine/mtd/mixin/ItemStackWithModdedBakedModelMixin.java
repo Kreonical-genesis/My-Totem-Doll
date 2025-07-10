@@ -23,8 +23,10 @@ public class ItemStackWithModdedBakedModelMixin implements ItemStackWithModdedBa
 		return modded;
 	}
 
-	@Inject(at = @At("RETURN"), method = /*? if <=1.21.4 {*/ /*"copy" *//*?} else {*/ "copy()Lnet/minecraft/item/ItemStack;" /*?}*/)
-	private void generated(CallbackInfoReturnable<ItemStack> cir) {
-		((ItemStackWithModdedBakedModel)cir.getReturnValue()).myTotemDoll$setModdedModel(this.myTotemDoll$isModdedModel());
+	//? if <=1.21.5 {
+	/*@Inject(at = @At("RETURN"), method = /^? if <=1.21.4 {^/ /^"copy" ^//^?} else {^/ "copy()Lnet/minecraft/item/ItemStack;" /^?}^/)
+	private void markItemStack(CallbackInfoReturnable<ItemStack> cir) {
+		((ItemStackWithModdedBakedModel) cir.getReturnValue()).myTotemDoll$setModdedModel(this.myTotemDoll$isModdedModel());
 	}
+	*///?}
 }

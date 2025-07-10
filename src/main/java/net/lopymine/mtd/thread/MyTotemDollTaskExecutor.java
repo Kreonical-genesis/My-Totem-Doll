@@ -8,10 +8,10 @@ import java.util.concurrent.*;
 // Basically, for now I need it only for downloading totems
 public class MyTotemDollTaskExecutor {
 
-	public static ExecutorService MAIN_EXECUTOR = Executors.newFixedThreadPool(MyTotemDollClient.getConfig().getExecutorThreadsCount());
+	public static ExecutorService MAIN_EXECUTOR = Executors.newFixedThreadPool(MyTotemDollClient.getConfig().getParallelTasksCount());
 
 	public static void reload() {
-		int threadsCount = MyTotemDollClient.getConfig().getExecutorThreadsCount();
+		int threadsCount = MyTotemDollClient.getConfig().getParallelTasksCount();
 		List<Runnable> runnables = MAIN_EXECUTOR.shutdownNow();
 		MAIN_EXECUTOR = Executors.newFixedThreadPool(threadsCount);
 		for (Runnable runnable : runnables) {

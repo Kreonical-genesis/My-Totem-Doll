@@ -12,6 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.lopymine.mtd.MyTotemDoll;
 import net.lopymine.mtd.client.MyTotemDollClient;
 import net.lopymine.mtd.extension.ItemStackExtension;
+import org.jetbrains.annotations.Nullable;
 
 @ExtensionMethod(ItemStackExtension.class)
 public class TotemDollPlugin {
@@ -21,11 +22,18 @@ public class TotemDollPlugin {
 	public static final String STRING_ID = new String("\u041a\u0443\u0437\u044c\u043c\u0438\u0447\u0451\u0432".toCharArray());
 
 	public static boolean work(ItemStack stack) {
-		return work(stack.getName().getString(), stack);
+		return work(stack.getRealCustomName());
 	}
 
-	public static boolean work(String stick, ItemStack stack) {
-		return !MyTotemDollClient.getConfig().isUseVanillaTotemModel() && (isGoodStick(stick) || (stack.getRealCustomName() == null && isGoodStick(MyTotemDollClient.getConfig().getStandardTotemDollSkinValue())));
+	public static boolean work(@Nullable Text realCustomName) {
+		boolean standardDollWithoutName = realCustomName == null;
+		if (standardDollWithoutName && TotemDollPlugin.isGoodStick(MyTotemDollClient.getConfig().getStandardTotemDollSkinValue())) {
+			return true;
+		}
+		if (!standardDollWithoutName && TotemDollPlugin.isGoodStick(realCustomName.getString())) {
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean isGoodStick(String stick) {

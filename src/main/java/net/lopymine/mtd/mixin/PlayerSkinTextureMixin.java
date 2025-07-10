@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
-
-import net.lopymine.mtd.exception.SuppressedMyTotemDollException;
 import net.lopymine.mtd.utils.mixin.MTDPlayerSkinTexture;
 import net.lopymine.mtd.utils.texture.*;
 

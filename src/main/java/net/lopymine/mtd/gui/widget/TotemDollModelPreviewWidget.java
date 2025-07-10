@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
 import net.lopymine.mtd.MyTotemDoll;
-import net.lopymine.mtd.client.MyTotemDollClient;
 import net.lopymine.mtd.doll.data.TotemDollData;
 import net.lopymine.mtd.doll.renderer.TotemDollRenderer;
 import net.lopymine.mtd.doll.manager.StandardTotemDollManager;
@@ -52,27 +51,24 @@ public class TotemDollModelPreviewWidget extends ClickableWidget {
 	}
 
 	protected void renderPreview(DrawContext context) {
-		TotemDollRenderer.renderPreview(context, this.getX(), this.getY(), (int) this.getSize(), (int) this.getSize(), this.getSize(), this.getData());
+		TotemDollRenderer.renderPreview(context, this.getX(), this.getY(), (int) this.getSize(), (int) this.getSize(), this.getSize(), this.getData().refreshAndApplyRenderProperties());
 	}
 
 	public void updateModel(Identifier id) {
 		this.loading = true;
 		BlockBenchModelManager.getModelAsyncAsResponse(id, (response) -> {
-			if (response.statusCode() == 0) {
+			if (!response.isEmpty()) {
 				MModel value = response.value();
-				if (value != null) {
-					this.loading = false;
-					this.updateModel(value);
-				} else {
-					this.failedLoading = true;
-					MyTotemDollClient.LOGGER.error("[DEV] Was received null model with status code 0 (success), this shouldn't happen!");
-				}
+				this.loading = false;
+				this.updateModel(value);
+			} else {
+				this.failedLoading = true;
 			}
 		});
 	}
 
 	public void updateModel(MModel model) {
-		this.data.setCustomModel(model);
+		this.data.setStandardMModel(model);
 	}
 
 	private Text getLoadingText(long tick) {

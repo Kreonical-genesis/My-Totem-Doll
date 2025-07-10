@@ -42,11 +42,11 @@ public class GeneralCategory {
 	}
 
 	public static OptionGroup getThreadGroup(MyTotemDollConfig defConfig, MyTotemDollConfig config) {
-		return SimpleGroup.startBuilder("threads")
+		return SimpleGroup.startBuilder("parallel_tasks")
 				.options(
-						SimpleOption.<Integer>startBuilder("executor_threads_count")
-								.withBinding(defConfig.getExecutorThreadsCount(), config::getExecutorThreadsCount, (i) -> {
-									config.setExecutorThreadsCount(i);
+						SimpleOption.<Integer>startBuilder("parallel_tasks_count")
+								.withBinding(defConfig.getParallelTasksCount(), config::getParallelTasksCount, (i) -> {
+									config.setParallelTasksCount(i);
 									MyTotemDollTaskExecutor.reload();
 								}, false)
 								.withDescription(SimpleContent.NONE)

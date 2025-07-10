@@ -90,7 +90,7 @@ public class StandardDollCategory {
 					config.setStandardTotemDollModelValue(value);
 					renderer.updateDollState(true);
 					for (TotemDollData data : TotemDollManager.getAllLoadedDolls()) {
-						data.setShouldRecreateModel(true);
+						data.setShouldRecreateStandardModel(true);
 					}
 				}, true)
 				.getOptionBuilder()
