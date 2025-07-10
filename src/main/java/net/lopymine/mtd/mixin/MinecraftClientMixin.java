@@ -26,9 +26,9 @@ public class MinecraftClientMixin {
 	@Inject(at = @At("HEAD"), method = "createInitScreens")
 	private void addMTDHelloScreen(List<Function<Runnable, Screen>> list, /*? if >=1.21.6 {*/ CallbackInfoReturnable<Boolean> /*?} else {*/ /*CallbackInfo *//*?}*/ ci) {
 		MyTotemDollConfig config = MyTotemDollClient.getConfig();
-		if (config.isFirstRun() || FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (config.isFirstRun()) {
 			list.add(WelcomeScreen::new);
-			config.setFirstRun(false);
+			if (!FabricLoader.getInstance().isDevelopmentEnvironment()) config.setFirstRun(false);
 			config.save();
 		}
 	}
